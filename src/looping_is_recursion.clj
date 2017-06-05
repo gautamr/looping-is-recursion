@@ -45,12 +45,15 @@
         (recur (if (contains? acc-set f) (disj acc-set f) (conj acc-set f)) (rest coll))))))
 
 (defn fast-fibo [n]
-  (loop [f0 0 f1 1 nth-f0 0 nth-f1 1]
-    (cond
-      (= n nth-f0) f0
-      (= n nth-f1) f1
-      :else (let [new-f0 (+ f0 f1) new-f1 (+ new-f0 f1)]
-              (recur new-f0 new-f1 (inc nth-f0) (inc nth-f1))))))
+  (loop [f0 0 f1 1 nth 0]
+    (if (= n nth)
+      f0
+      (recur f1 (+ f0 f1) (inc nth)))))
 
+;; contains? is tricky to use in vector so two collections are used
 (defn cut-at-repetition [a-seq]
-  [":("])
+  (loop [acc [] seen #{} coll a-seq]
+    (let [f (first coll)]
+      (if (or (contains? seen f) (empty? coll))
+        acc
+        (recur (conj acc f) (conj seen f) (rest coll))))))
